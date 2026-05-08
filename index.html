@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAB BALLOON — TUZZI // Proyecto Estratosférico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-base:      #07090f;
+  --bg-layer1:    #0d1117;
+  --bg-layer2:    #111820;
+  --bg-card:      rgba(13, 17, 23, 0.85);
+  --accent:       #00e5c0;
+  --accent-dim:   rgba(0, 229, 192, 0.12);
+  --accent-glow:  rgba(0, 229, 192, 0.4);
+  --text-body:    #c8d8e8;
+  --text-dim:     #8090a0;
+  --text-faint:   #3a4a5a;
+  --border:       rgba(0, 229, 192, 0.08);
+  --border-hover: rgba(0, 229, 192, 0.35);
+  --font-display: 'Rajdhani', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+  --font-body:    'IBM Plex Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ─── Blueprint grid background ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,192,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,192,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Radial orbs ─── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 0%, rgba(0,229,192,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(0,180,255,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 60px;
+  background: rgba(7, 9, 15, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #ffaa00;
+  box-shadow: 0 0 8px #ffaa00;
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ─── Layout ─── */
+main {
+  position: relative;
+  z-index: 1;
+  padding-top: 60px;
+}
+
+section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 40px;
+}
+
+/* ─── Divider ─── */
+.divider {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0.25;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Fade-up animation ─── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  gap: 0;
+  padding: 120px 40px 80px;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(0,229,192,0.25);
+  padding: 6px 16px;
+  border-radius: 2px;
+  margin-bottom: 36px;
+  background: var(--accent-dim);
+}
+
+.hero-logo-wrap {
+  margin-bottom: 40px;
+}
+
+.hero-logo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,229,192,0.2);
+  box-shadow: 0 0 40px rgba(0,229,192,0.1), 0 0 80px rgba(0,229,192,0.05);
+  object-fit: cover;
+  filter: drop-shadow(0 0 20px rgba(0,229,192,0.2));
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(52px, 8vw, 96px);
+  letter-spacing: 8px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.hero-title span {
+  color: var(--accent);
+  text-shadow: 0 0 30px var(--accent-glow);
+}
+
+.hero-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.5vw, 26px);
+  font-weight: 500;
+  letter-spacing: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.hero-desc {
+  max-width: 600px;
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin: 0 auto 48px;
+}
+
+.hero-cursor {
+  display: inline-block;
+  width: 10px; height: 20px;
+  background: var(--accent);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: cursor-blink 1.1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hero-metrics {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.metric {
+  text-align: center;
+}
+
+.metric-val {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+.scroll-arrow {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+
+/* ─── Section headers ─── */
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-tag::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--accent);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.section-lead {
+  font-size: 15px;
+  color: var(--text-dim);
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: 60px;
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 28px 28px 24px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,192,0.04) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 30px rgba(0,229,192,0.07);
+}
+
+.card:hover::before { opacity: 1; }
+
+/* ─── ABOUT section ─── */
+#sobre {
+  padding-top: 80px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.about-main {
+  grid-column: 1 / -1;
+  padding: 40px;
+}
+
+.about-main p {
+  font-size: 16px;
+  color: var(--text-dim);
+  line-height: 1.9;
+  margin-bottom: 16px;
+}
+
+.about-main p:last-child { margin-bottom: 0; }
+
+.about-main strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ─── ARCHITECTURE ─── */
+.arch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.arch-card {
+  padding: 28px 24px;
+}
+
+.arch-icon {
+  width: 42px; height: 42px;
+  border: 1.5px solid rgba(0,229,192,0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  background: var(--accent-dim);
+}
+
+.arch-icon svg {
+  width: 20px; height: 20px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.arch-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.arch-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.arch-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(0,229,192,0.2);
+  border-radius: 2px;
+  padding: 3px 8px;
+  background: rgba(0,229,192,0.07);
+}
+
+/* ─── DATA SECTION ─── */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.data-group {
+  padding: 28px 24px;
+}
+
+.data-group-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.data-group-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(0,229,192,0.3), transparent);
+}
+
+.data-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,229,192,0.05);
+}
+
+.data-item:last-child { border-bottom: none; }
+
+.data-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 7px;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.data-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-body);
+}
+
+.data-note {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+/* ─── HARDWARE SECTION ─── */
+.hw-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.hw-image-wrap {
+  position: relative;
+}
+
+.hw-image {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  filter: brightness(0.9) contrast(1.05);
+  transition: filter 0.3s;
+}
+
+.hw-image:hover {
+  filter: brightness(1) contrast(1.1);
+}
+
+.hw-image-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.hw-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,229,192,0.05);
+}
+
+.spec-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+}
+
+.spec-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  text-align: right;
+}
+
+/* ─── PIPELINE SECTION ─── */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.pipe-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.pipe-icon-wrap {
+  width: 64px; height: 64px;
+  border: 1.5px solid rgba(0,229,192,0.25);
+  border-radius: 4px;
+  background: var(--bg-layer2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color 0.3s;
+}
+
+.pipe-icon-wrap:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(0,229,192,0.15);
+}
+
+.pipe-icon-wrap svg {
+  width: 26px; height: 26px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pipe-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.pipe-arrow {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right, var(--accent-glow), rgba(0,229,192,0.1));
+  position: relative;
+  align-self: flex-start;
+  margin-top: 32px;
+  flex-shrink: 0;
+}
+
+.pipe-arrow::after {
+  content: '▶';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8px;
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+/* ─── MODES / PHASES ─── */
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.phase-card {
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.phase-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.phase-name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.phase-comm {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.phase-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.phase-bar {
+  width: 40px;
+  height: 3px;
+  margin: 14px auto 0;
+  border-radius: 2px;
+}
+
+.phase-bar.ascenso  { background: var(--accent); }
+.phase-bar.burst    { background: #ff5555; }
+.phase-bar.descenso { background: #ffaa00; }
+.phase-bar.tierra   { background: #00aaff; }
+
+/* ─── DASHBOARD SECTION ─── */
+.dashboard-preview {
+  background: var(--bg-layer1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-preview::before {
+  content: 'DASHBOARD PREVIEW';
+  position: absolute;
+  top: 12px; right: 20px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-faint);
+}
+
+.dashboard-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.dash-feat {
+  padding: 20px;
+  border-left: 2px solid rgba(0,229,192,0.2);
+  transition: border-color 0.3s;
+}
+
+.dash-feat:hover { border-color: var(--accent); }
+
+.dash-feat-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.dash-feat-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ─── STATUS SECTION ─── */
+#estado {
+  padding-top: 60px;
+  padding-bottom: 80px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.status-card {
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.status-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+.status-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-item {
+  margin-bottom: 20px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.progress-pct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.progress-bar-bg {
+  height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--accent), rgba(0,229,192,0.4));
+  border-radius: 2px;
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── REPO SECTION ─── */
+.repo-tree {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.9;
+  padding: 28px;
+  background: var(--bg-layer1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.repo-tree .folder { color: var(--text-body); }
+.repo-tree .file   { color: var(--text-faint); }
+.repo-tree .accent { color: var(--accent); }
+
+/* ─── FOOTER ─── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 48px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent);
+}
+
+.footer-info {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 2px;
+  line-height: 1.8;
+  text-align: right;
+}
+
+/* ─── JSON preview ─── */
+.json-block {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.8;
+  padding: 24px;
+  background: var(--bg-layer1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.j-key   { color: #7eb8e8; }
+.j-str   { color: #b5d4a0; }
+.j-num   { color: var(--accent); }
+.j-punct { color: var(--text-faint); }
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  section { padding: 60px 20px; }
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .about-grid { grid-template-columns: 1fr; }
+  .arch-grid { grid-template-columns: 1fr; }
+  .data-grid { grid-template-columns: 1fr; }
+  .hw-layout { grid-template-columns: 1fr; }
+  .phases-grid { grid-template-columns: repeat(2, 1fr); }
+  .status-grid { grid-template-columns: 1fr; }
+  .dashboard-features { grid-template-columns: 1fr; }
+  .pipeline { gap: 8px; }
+  .pipe-arrow { width: 30px; }
+  footer { flex-direction: column; text-align: center; }
+  .footer-info { text-align: center; }
+  .hero-metrics { gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">TUZZI // HAB</div>
+  <ul class="nav-links">
+    <li><a href="#sobre">Proyecto</a></li>
+    <li><a href="#arquitectura">Arquitectura</a></li>
+    <li><a href="#datos">Datos</a></li>
+    <li><a href="#hardware">Hardware</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#estado">Estado</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    EN DESARROLLO
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge fade-up">
+    <span>◆</span> Córdoba, Argentina — 2026
+  </div>
+
+  <div class="hero-logo-wrap fade-up">
+    <img src="logo01.png" alt="TUZZI HAB" class="hero-logo"
+         onerror="this.style.display='none'">
+  </div>
+
+  <h1 class="hero-title fade-up"><span>HAB</span> BALLOON</h1>
+  <p class="hero-subtitle fade-up">ESTRATOSFERA / MESOSFERA / TROPOSFERA<span class="hero-cursor"></span></p>
+
+  <p class="hero-desc fade-up">
+    Plataforma de globo de alta altitud con telemetría LoRa en tiempo real,
+    predicción de aterrizaje con fusión sensorial adaptativa y dashboard
+    táctico de seguimiento. Proyecto de investigación open-source.
+  </p>
+
+  <div class="hero-metrics fade-up">
+    <div class="metric">
+      <div class="metric-val">30+</div>
+      <div class="metric-label">km altitud</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">915</div>
+      <div class="metric-label">MHz LoRa</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">9</div>
+      <div class="metric-label">sensores</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">4G</div>
+      <div class="metric-label">recuperación</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOBRE EL PROYECTO -->
+<section id="sobre">
+  <div class="section-tag fade-up">01 — Proyecto</div>
+  <h2 class="section-title fade-up">¿Qué es<br>HAB Balloon?</h2>
+  <p class="section-lead fade-up">Un globo meteorológico instrumentado con sensores, radios LoRa y 4G, diseñado para registrar datos atmosféricos reales durante el ascenso y descenso a través de la troposfera y estratosfera.</p>
+
+  <div class="about-grid">
+    <div class="card about-main fade-up">
+      <p>
+        El proyecto <strong>HAB Balloon</strong> (High Altitude Balloon) es una plataforma de
+        investigación atmosférica construida desde cero. El sistema integra un nodo ESP32
+        con sensores de posición (u-blox M9N), entorno (BME280), dinámica (MPU6050),
+        magnetómetro y radio LoRa SX1278 para comunicación de largo alcance.
+      </p>
+      <p>
+        El payload es lanzado desde <strong>Córdoba, Argentina</strong> atado a un globo
+        meteorológico de 800–1500 g, capaz de alcanzar altitudes estratosféricas superiores
+        a los 30 km antes de que el globo reviente y el payload descienda bajo un
+        <strong>paracaídas</strong> hasta el punto de recuperación.
+      </p>
+      <p>
+        Todo el sistema fue diseñado con redundancia de comunicación: LoRa activo durante
+        el vuelo y el módulo <strong>4G (EG91)</strong> que se activa al aterrizar para
+        transmitir la posición exacta de recuperación vía MQTT.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ARQUITECTURA -->
+<section id="arquitectura">
+  <div class="section-tag fade-up">02 — Arquitectura</div>
+  <h2 class="section-title fade-up">Pipeline de<br>Datos</h2>
+  <p class="section-lead fade-up">El flujo de información recorre desde los sensores a bordo hasta el dashboard en tiempo real, pasando por el gateway LoRa, broker MQTT y servidor de predicción.</p>
+
+  <!-- Pipeline visual -->
+  <div class="pipeline fade-up">
+    <div class="pipe-node">
+      <div class="pipe-icon-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </div>
+      <div class="pipe-label">Sensores<br>Payload</div>
+    </div>
+    <div class="pipe-arrow"></div>
+    <div class="pipe-node">
+      <div class="pipe-icon-wrap">
+        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+      </div>
+      <div class="pipe-label">ESP32<br>LoRa</div>
+    </div>
+    <div class="pipe-arrow"></div>
+    <div class="pipe-node">
+      <div class="pipe-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M1 6l5 6M5 6l5 6M9 6l5 6M13 6l5 6"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div class="pipe-label">Gateway<br>Tierra</div>
+    </div>
+    <div class="pipe-arrow"></div>
+    <div class="pipe-node">
+      <div class="pipe-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 12 19.79 19.79 0 011.15 3.4 2 2 0 013.12 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      </div>
+      <div class="pipe-label">Broker<br>MQTT</div>
+    </div>
+    <div class="pipe-arrow"></div>
+    <div class="pipe-node">
+      <div class="pipe-icon-wrap">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="pipe-label">Servidor<br>Flask</div>
+    </div>
+    <div class="pipe-arrow"></div>
+    <div class="pipe-node">
+      <div class="pipe-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 9h18M9 21V9"/></svg>
+      </div>
+      <div class="pipe-label">Dashboard<br>Táctico</div>
+    </div>
+  </div>
+
+  <div class="arch-grid fade-up">
+    <div class="card arch-card">
+      <div class="arch-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div class="arch-title">Payload</div>
+      <p class="arch-desc">Caja de telgopor con ESP32, GPS M9N, LoRa SX1278, BME280, MPU6050, MicroSD y batería 18650. Dimensiones: 160×120×100 mm.</p>
+      <div class="arch-tags">
+        <span class="tag">ESP32</span>
+        <span class="tag">LoRa</span>
+        <span class="tag">GPS</span>
+        <span class="tag">BME280</span>
+        <span class="tag">MPU6050</span>
+      </div>
+    </div>
+
+    <div class="card arch-card">
+      <div class="arch-icon">
+        <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg>
+      </div>
+      <div class="arch-title">Comunicación</div>
+      <p class="arch-desc">LoRa 915 MHz para telemetría continua en vuelo. Módulo 4G EG91 activado al aterrizar para recuperación y reporte de posición exacta.</p>
+      <div class="arch-tags">
+        <span class="tag">915 MHz</span>
+        <span class="tag">SX1278</span>
+        <span class="tag">4G EG91</span>
+        <span class="tag">MQTT</span>
+      </div>
+    </div>
+
+    <div class="card arch-card">
+      <div class="arch-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="arch-title">Predictor</div>
+      <p class="arch-desc">Motor Python con fusión sensorial adaptativa: GPS + barométrico + IMU + magnetómetro. Simula trayectoria de caída con perfil de viento por capas.</p>
+      <div class="arch-tags">
+        <span class="tag">Python</span>
+        <span class="tag">NumPy</span>
+        <span class="tag">Fusión</span>
+        <span class="tag">Monte Carlo</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FASES DE VUELO -->
+<section id="fases">
+  <div class="section-tag fade-up">03 — Misión</div>
+  <h2 class="section-title fade-up">Fases del<br>Vuelo</h2>
+
+  <div class="phases-grid fade-up">
+    <div class="card phase-card">
+      <div class="phase-num">FASE // 01</div>
+      <div class="phase-name">Ascenso</div>
+      <div class="phase-comm">LoRa activo</div>
+      <div class="phase-desc">~5 m/s velocidad de ascenso. Telemetría continua. Construcción del perfil de viento por capas.</div>
+      <div class="phase-bar ascenso"></div>
+    </div>
+    <div class="card phase-card">
+      <div class="phase-num">FASE // 02</div>
+      <div class="phase-name">Burst</div>
+      <div class="phase-comm">Detección IMU</div>
+      <div class="phase-desc">El globo revienta a ~30 km. El MPU6050 detecta la transición de fase por aceleración brusca.</div>
+      <div class="phase-bar burst"></div>
+    </div>
+    <div class="card phase-card">
+      <div class="phase-num">FASE // 03</div>
+      <div class="phase-name">Descenso</div>
+      <div class="phase-comm">LoRa + predicción</div>
+      <div class="phase-desc">Paracaídas desplegado. La incertidumbre de predicción se reduce progresivamente.</div>
+      <div class="phase-bar descenso"></div>
+    </div>
+    <div class="card phase-card">
+      <div class="phase-num">FASE // 04</div>
+      <div class="phase-name">Tierra</div>
+      <div class="phase-comm">4G + LoRa beacon</div>
+      <div class="phase-desc">Al aterrizar se activa el 4G para reporte exacto. LoRa opera como beacon de corto alcance para recuperación.</div>
+      <div class="phase-bar tierra"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DATOS -->
+<section id="datos">
+  <div class="section-tag fade-up">04 — Telemetría</div>
+  <h2 class="section-title fade-up">Variables<br>Registradas</h2>
+  <p class="section-lead fade-up">El payload captura datos de alta resolución en 7 categorías científicas, transmitidos en tiempo real y almacenados en MicroSD.</p>
+
+  <div class="data-grid fade-up">
+    <div class="card data-group">
+      <div class="data-group-title">🧭 Posición y trayectoria</div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Latitud / Longitud</div><div class="data-note">GPS u-blox M9N</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Altitud GPS + barométrica</div><div class="data-note">Fusión adaptativa</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Velocidad horizontal / vertical</div><div class="data-note">m/s calculado</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Rumbo / Heading</div><div class="data-note">GPS + magnetómetro</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Timestamp UTC</div><div class="data-note">Sincronizado GPS</div></div></div>
+    </div>
+
+    <div class="card data-group">
+      <div class="data-group-title">🌡️ Variables atmosféricas</div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Temperatura externa</div><div class="data-note">BME280 / DS18B20</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Presión atmosférica</div><div class="data-note">BME280 — hPa</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Humedad relativa</div><div class="data-note">BME280 — %</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Perfil vertical</div><div class="data-note">Construido en tiempo real</div></div></div>
+    </div>
+
+    <div class="card data-group">
+      <div class="data-group-title">🧠 Dinámica — MPU6050</div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Aceleración X/Y/Z</div><div class="data-note">m/s² — detección burst</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Velocidad angular (gyro)</div><div class="data-note">°/s — estabilidad</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Vector magnético</div><div class="data-note">Magnetómetro 3 ejes</div></div></div>
+    </div>
+
+    <div class="card data-group">
+      <div class="data-group-title">📡 RF y Sistema</div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">RSSI LoRa</div><div class="data-note">dBm — análisis link budget</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">SNR</div><div class="data-note">Signal-to-Noise Ratio</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Pérdida de paquetes</div><div class="data-note">% — calidad del enlace</div></div></div>
+      <div class="data-item"><div class="data-dot"></div><div><div class="data-name">Voltaje batería</div><div class="data-note">Monitoreo energético</div></div></div>
+    </div>
+  </div>
+
+  <!-- JSON example -->
+  <div class="fade-up" style="margin-top: 32px;">
+    <div class="section-tag" style="margin-bottom: 16px;">Estructura de paquete</div>
+    <div class="json-block">
+      <span class="j-punct">{</span><br>
+      &nbsp;&nbsp;<span class="j-key">"id"</span><span class="j-punct">:</span> <span class="j-str">"HAB-ALPHA-07"</span><span class="j-punct">,</span><br>
+      &nbsp;&nbsp;<span class="j-key">"ts"</span><span class="j-punct">:</span> <span class="j-num">1748300000</span><span class="j-punct">,</span><br>
+      &nbsp;&nbsp;<span class="j-key">"gps"</span><span class="j-punct">:</span> <span class="j-punct">{</span> <span class="j-key">"lat"</span><span class="j-punct">:</span> <span class="j-num">-31.4167</span><span class="j-punct">,</span> <span class="j-key">"lon"</span><span class="j-punct">:</span> <span class="j-num">-64.1833</span><span class="j-punct">,</span> <span class="j-key">"alt"</span><span class="j-punct">:</span> <span class="j-num">28430</span><span class="j-punct">,</span> <span class="j-key">"sat"</span><span class="j-punct">:</span> <span class="j-num">11</span> <span class="j-punct">},</span><br>
+      &nbsp;&nbsp;<span class="j-key">"met"</span><span class="j-punct">:</span> <span class="j-punct">{</span> <span class="j-key">"t_ext"</span><span class="j-punct">:</span> <span class="j-num">-52.4</span><span class="j-punct">,</span> <span class="j-key">"pres"</span><span class="j-punct">:</span> <span class="j-num">14.2</span><span class="j-punct">,</span> <span class="j-key">"hum"</span><span class="j-punct">:</span> <span class="j-num">8</span> <span class="j-punct">},</span><br>
+      &nbsp;&nbsp;<span class="j-key">"mpu"</span><span class="j-punct">:</span> <span class="j-punct">{</span> <span class="j-key">"acc"</span><span class="j-punct">:</span> <span class="j-punct">[</span><span class="j-num">0.12</span><span class="j-punct">,</span> <span class="j-num">-0.08</span><span class="j-punct">,</span> <span class="j-num">9.78</span><span class="j-punct">],</span> <span class="j-key">"gyro"</span><span class="j-punct">:</span> <span class="j-punct">[</span><span class="j-num">0.01</span><span class="j-punct">,</span> <span class="j-num">0.03</span><span class="j-punct">,</span> <span class="j-num">-0.02</span><span class="j-punct">]</span> <span class="j-punct">},</span><br>
+      &nbsp;&nbsp;<span class="j-key">"rf"</span><span class="j-punct">:</span> <span class="j-punct">{</span> <span class="j-key">"rssi"</span><span class="j-punct">:</span> <span class="j-num">-72</span><span class="j-punct">,</span> <span class="j-key">"snr"</span><span class="j-punct">:</span> <span class="j-num">9.2</span><span class="j-punct">,</span> <span class="j-key">"pkt_loss"</span><span class="j-punct">:</span> <span class="j-num">2.1</span> <span class="j-punct">},</span><br>
+      &nbsp;&nbsp;<span class="j-key">"ext"</span><span class="j-punct">:</span> <span class="j-punct">{</span> <span class="j-key">"v_bat"</span><span class="j-punct">:</span> <span class="j-num">3.87</span> <span class="j-punct">}</span><br>
+      <span class="j-punct">}</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HARDWARE -->
+<section id="hardware">
+  <div class="section-tag fade-up">05 — Hardware</div>
+  <h2 class="section-title fade-up">Caja<br>Payload</h2>
+  <p class="section-lead fade-up">El diseño mecánico prioriza aislamiento térmico, peso mínimo y centro de gravedad bajo. Telgopor de alta densidad, 20–30 mm de espesor.</p>
+
+  <div class="hw-layout fade-up">
+    <div class="hw-image-wrap">
+      <img src="idea_general_croquis.png" alt="Plano Payload HAB" class="hw-image"
+           onerror="this.style.background='var(--bg-layer2)'; this.style.minHeight='300px';">
+      <div class="hw-image-caption">Fig. 1 — Distribución interna (axonométrica)</div>
+    </div>
+
+    <div class="hw-specs">
+      <div class="section-tag" style="margin-bottom: 20px;">Especificaciones</div>
+
+      <div class="spec-row"><span class="spec-key">Controlador</span><span class="spec-val">ESP32 + LoRa SX1278</span></div>
+      <div class="spec-row"><span class="spec-key">GPS</span><span class="spec-val">u-blox M9N</span></div>
+      <div class="spec-row"><span class="spec-key">Meteorología</span><span class="spec-val">BME280</span></div>
+      <div class="spec-row"><span class="spec-key">IMU</span><span class="spec-val">MPU6050 (6-DOF)</span></div>
+      <div class="spec-row"><span class="spec-key">Radio frecuencia</span><span class="spec-val">915 MHz LoRa</span></div>
+      <div class="spec-row"><span class="spec-key">Celular</span><span class="spec-val">EESA-IOT V2 / EG91</span></div>
+      <div class="spec-row"><span class="spec-key">Almacenamiento</span><span class="spec-val">MicroSD</span></div>
+      <div class="spec-row"><span class="spec-key">Batería</span><span class="spec-val">18650 Li-Ion (2600–3400 mAh)</span></div>
+      <div class="spec-row"><span class="spec-key">Regulador</span><span class="spec-val">DC-DC 5V / 3.3V</span></div>
+      <div class="spec-row"><span class="spec-key">Dimensiones internas</span><span class="spec-val">160 × 120 × 100 mm</span></div>
+      <div class="spec-row"><span class="spec-key">Peso estimado</span><span class="spec-val">180 – 250 g</span></div>
+      <div class="spec-row"><span class="spec-key">Consumo promedio</span><span class="spec-val">80 – 150 mA</span></div>
+      <div class="spec-row"><span class="spec-key">Globo</span><span class="spec-val">800 – 1500 g meteorológico</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="section-tag fade-up">06 — Software</div>
+  <h2 class="section-title fade-up">Tactical<br>Dashboard</h2>
+  <p class="section-lead fade-up">Centro de comando táctico en tiempo real. El servidor Flask recibe telemetría MQTT, ejecuta el predictor adaptativo y sirve el dashboard con polling cada 2 segundos.</p>
+
+  <div class="dashboard-preview fade-up">
+    <div class="dashboard-features">
+      <div class="dash-feat">
+        <div class="dash-feat-name">Mapa en vivo</div>
+        <div class="dash-feat-desc">Trayectoria real + predicción de aterrizaje con radio de incertidumbre dinámico sobre tiles oscuros CartoCDN.</div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-name">HUD Táctico</div>
+        <div class="dash-feat-desc">Altitud MSL, velocidad vertical, fase de vuelo, GPS quality, RSSI/SNR, temperatura, presión, batería.</div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-name">Predictor IA</div>
+        <div class="dash-feat-desc">Fusión GPS + barométrico + IMU + magnetómetro. Perfil de viento por capas con interpolación en tiempo real.</div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-name">Gráficos históricos</div>
+        <div class="dash-feat-desc">Altitud, velocidad, temperatura y convergencia de predicción. Últimas 100 muestras con Chart.js.</div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-name">Multi-API REST</div>
+        <div class="dash-feat-desc">/api/estado · /api/predicciones · /api/salud. Arquitectura desacoplada para integración futura.</div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-name">Atajos teclado</div>
+        <div class="dash-feat-desc">T / G / P / F / S para charts, centrar globo, predicción, fit-all y seguimiento automático.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ESTADO DEL PROYECTO -->
+<section id="estado">
+  <div class="section-tag fade-up">07 — Progreso</div>
+  <h2 class="section-title fade-up">Estado Actual<br>del Proyecto</h2>
+
+  <div class="status-grid fade-up" style="margin-bottom: 48px;">
+    <div class="card status-card">
+      <div class="status-label">Estado general</div>
+      <div class="status-value">DEV</div>
+      <div class="status-sub">Desarrollo activo</div>
+    </div>
+    <div class="card status-card">
+      <div class="status-label">Vuelo estimado</div>
+      <div class="status-value">2026</div>
+      <div class="status-sub">Córdoba, Argentina</div>
+    </div>
+    <div class="card status-card">
+      <div class="status-label">Software</div>
+      <div class="status-value">v0.2</div>
+      <div class="status-sub">Server + Dashboard</div>
+    </div>
+  </div>
+
+  <div class="card fade-up" style="padding: 36px 40px;">
+    <div class="section-tag" style="margin-bottom: 28px;">Avance por módulo</div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">Dashboard Web (Frontend)</span>
+        <span class="progress-pct">90%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">Servidor Flask + MQTT</span>
+        <span class="progress-pct">85%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 85%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">Predictor de aterrizaje</span>
+        <span class="progress-pct">70%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 70%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">Firmware ESP32 (payload)</span>
+        <span class="progress-pct">40%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 40%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">Hardware / PCB ensamblado</span>
+        <span class="progress-pct">30%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 30%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">Pruebas de campo / integración</span>
+        <span class="progress-pct">10%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 10%"></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REPO -->
+<section id="repo">
+  <div class="section-tag fade-up">08 — Repositorio</div>
+  <h2 class="section-title fade-up">Estructura<br>del Proyecto</h2>
+
+  <div class="repo-tree fade-up">
+<span class="accent">hab-balloon/</span>
+├── <span class="folder">firmware/</span>
+│   ├── <span class="folder">esp32_node/</span>          <span class="file">— código del payload</span>
+│   ├── <span class="folder">gateway/</span>             <span class="file">— recepción LoRa → MQTT</span>
+│   └── <span class="folder">shared/</span>              <span class="file">— protocol.h, crc.c</span>
+├── <span class="folder">hardware/</span>
+│   ├── <span class="folder">schematics/</span>
+│   ├── <span class="folder">pcb/</span>
+│   └── <span class="file">bom.csv</span>               <span class="file">— lista de materiales</span>
+├── <span class="folder">data/</span>
+│   ├── <span class="folder">raw/</span>                  <span class="file">— datos sin procesar</span>
+│   └── <span class="folder">processed/</span>           <span class="file">— datos limpios por vuelo</span>
+├── <span class="folder">analysis/</span>
+│   ├── <span class="folder">notebooks/</span>           <span class="file">— Jupyter por misión</span>
+│   └── <span class="folder">scripts/</span>             <span class="file">— parse, clean, plots</span>
+├── <span class="folder">dashboards/</span>
+│   ├── <span class="accent">server_legacy_v02.py</span>  <span class="file">— Flask + MQTT + predictor</span>
+│   └── <span class="accent">dashboard.html</span>        <span class="file">— Tactical Command Center</span>
+└── <span class="folder">docs/</span>
+    ├── <span class="file">architecture.md</span>
+    ├── <span class="file">hardware.md</span>
+    └── <span class="folder">results/</span>             <span class="file">— reportes por vuelo</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">TUZZI</div>
+    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); letter-spacing: 2px; margin-top: 6px;">
+      HAB BALLOON PROJECT
+    </div>
+  </div>
+  <div class="footer-info">
+    Córdoba, Argentina<br>
+    Troposfera · Estratosfera · Mesosfera<br>
+    <span style="color: var(--accent)">En desarrollo activo — 2026</span>
+  </div>
+</footer>
+
+<script>
+// ─── Fade-up on scroll ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up').forEach((el, i) => {
+  el.style.transitionDelay = (i % 4) * 0.08 + 's';
+  observer.observe(el);
+});
+
+// ─── Progress bars animate on view ───
+const progressObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.progress-bar-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => { bar.style.width = w; }, 100);
+      });
+      progressObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.card').forEach(c => {
+  if (c.querySelector('.progress-bar-fill')) progressObs.observe(c);
+});
+
+// ─── Nav active link ───
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current
+      ? 'var(--accent)' : '';
+  });
+}, { passive: true });
+
+// ─── Typing effect on hero ───
+const heroType = document.querySelector('.hero-desc');
+const text = heroType.textContent;
+heroType.textContent = '';
+let i = 0;
+const type = () => {
+  if (i < text.length) {
+    heroType.textContent += text[i++];
+    setTimeout(type, i < 5 ? 0 : 18);
+  }
+};
+setTimeout(type, 800);
+</script>
+</body>
+</html>
